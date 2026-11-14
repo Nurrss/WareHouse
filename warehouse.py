@@ -11,6 +11,8 @@ from exception import (
     NotEnoughStock
 )
 from enums import OrderStatus
+import time
+from contextlib import contextmanager
 
 class WareHouse:
     def __init__(self) -> None:
@@ -105,3 +107,13 @@ class WareHouse:
 
     def item_list(self) -> list[WareHouseItem]:
         return [item for item in self.items.values()]
+
+@contextmanager
+def operation(name: str):
+    print(f"Начало: {name}")
+    start_time = time.perf_counter()
+    try:
+        yield
+    finally:
+        finish_time = time.perf_counter() - start_time
+        print(f"Конец: {name} {finish_time:.4f}")

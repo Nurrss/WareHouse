@@ -1,4 +1,4 @@
-from warehouse import WareHouse
+from warehouse import WareHouse, operation
 from models import ItemCategory, Order, ExpressDelivery, StandardDelivery
 from exception import WareHouseError, ItemNotFound, InvalidStatusTransition
 
@@ -29,6 +29,8 @@ warehouse = WareHouse()
 warehouse.create_category(ItemCategory(1, "Электроника"))
 warehouse.create_category(ItemCategory(2, "Продукты"))
 print("Категории:", warehouse.category_list())
+category = warehouse.categories[1]
+print(category.to_json())
 
 # ===== 2. Товары =====
 warehouse.create_item(1, "Asus Rog Strix", 1, 1000)
@@ -36,6 +38,8 @@ warehouse.create_item(2, "Мышка Logitech", 1, 50)
 warehouse.create_item(3, "Сахар 1 кг", 2, 5)
 print("\nПосле создания:")
 show_stock(warehouse)
+item = warehouse.item_list()[0]
+print(item.to_json())
 
 # ===== 3. Приёмка =====
 warehouse.receive(1, 20)
@@ -55,6 +59,7 @@ print(order1.total)
 show_order(order3)
 print("Склад после оформления (ноутбуков 15, мышек 99):")
 show_stock(warehouse)
+print(order1.to_json())
 
 # Жизнь заказа №1: на складе → курьер → доставлен
 warehouse.ship_order(1)
@@ -100,3 +105,12 @@ try_it(warehouse.ship_order, 1)                # отправить уже до�
 print("\nИтог (ноутбуков 18, мышек 99, сахара 0):")
 show_stock(warehouse)
 print("Категории:", warehouse.category_list())
+
+print([i.to_json() for i in warehouse.item_list()])
+
+
+print("\n--- Context manager ---")
+
+# 1. Успешная операция
+with operation("Оформление заказа №7"):
+    warehouse.place_order(7, {2: 5}, StandardDelivery())

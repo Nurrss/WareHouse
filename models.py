@@ -1,15 +1,16 @@
 from enums import StockStatus, OrderStatus
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
+from mixins import JsonMixin
 
 
 @dataclass
-class ItemCategory:
+class ItemCategory(JsonMixin):
     id: int
     title: str
 
 @dataclass
-class WareHouseItem:
+class WareHouseItem(JsonMixin):
     id: int
     title: str
     category: ItemCategory
@@ -41,7 +42,7 @@ class Delivery(ABC):
         """За сколько дней"""
 
 @dataclass
-class Order:
+class Order(JsonMixin):
     id: int
     orders: list[OrderLine]
     delivery: Delivery
