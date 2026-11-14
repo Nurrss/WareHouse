@@ -1,4 +1,4 @@
-from models import WareHouseItem, ItemCategory, Order, OrderLine
+from models import WareHouseItem, ItemCategory, Order, OrderLine, Delivery
 from exception import (
     CategoryAlreadyExists,
     CategoryNotFound,
@@ -60,7 +60,7 @@ class WareHouse:
             except KeyError:
                 raise OrderNotFound(order_id) from None
 
-    def place_order(self, order_id: int, wanted: dict[int, int]) -> Order:
+    def place_order(self, order_id: int, wanted: dict[int, int], delivery: Delivery) -> Order:
         for item_id, quantity in wanted.items():
             item = self._get_item(item_id)
             if quantity <= 0:
@@ -74,7 +74,7 @@ class WareHouse:
             item.quantity -= quantity
             lines.append(OrderLine(item, quantity, item.price))
 
-        order = Order(order_id, lines)
+        order = Order(order_id, lines, delivery)
         self.orders[order_id] = order
         return order
             
@@ -99,7 +99,7 @@ class WareHouse:
             line.item.quantity += line.quantity
            
         order.status = OrderStatus.CANCELLED
-        
+
     def category_list(self) -> list[str]:
         return [category.title for category in self.categories.values()]
 

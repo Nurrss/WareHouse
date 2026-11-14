@@ -1,5 +1,5 @@
 from warehouse import WareHouse
-from models import ItemCategory, Order
+from models import ItemCategory, Order, ExpressDelivery, StandardDelivery
 from exception import WareHouseError, ItemNotFound, InvalidStatusTransition
 
 
@@ -46,9 +46,12 @@ show_stock(warehouse)
 # ===== 4. Заказы =====
 print("\n--- Заказы ---")
 
-order1 = warehouse.place_order(1, {1: 2, 2: 1})
-order3 = warehouse.place_order(3, {1: 3})
+order1 = warehouse.place_order(1, {1: 2, 2: 1}, ExpressDelivery())
+order3 = warehouse.place_order(3, {1: 3}, ExpressDelivery())
 show_order(order1)
+print(order1.items_total)       
+print(order1.delivery.cost())   
+print(order1.total)   
 show_order(order3)
 print("Склад после оформления (ноутбуков 15, мышек 99):")
 show_stock(warehouse)
@@ -79,10 +82,10 @@ except ItemNotFound as e:
     print(f"⚠️ {e}")
 
 print("\n--- Ошибки: заказы ---")
-try_it(warehouse.place_order, 2, {1: 500})     # не хватает ноутбуков
-try_it(warehouse.place_order, 4, {3: 1})       # сахара 0 шт.
-try_it(warehouse.place_order, 5, {1: 0})       # количество 0
-try_it(warehouse.place_order, 6, {999: 1})     # нет такого товара
+try_it(warehouse.place_order, 2, {1: 500}, ExpressDelivery())     # не хватает ноутбуков
+try_it(warehouse.place_order, 4, {3: 1}, ExpressDelivery())       # сахара 0 шт.
+try_it(warehouse.place_order, 5, {1: 0}, ExpressDelivery())       # количество 0
+try_it(warehouse.place_order, 6, {999: 1}, ExpressDelivery())     # нет такого товара
 try_it(warehouse.ship_order, 999)              # нет такого заказа
 
 try:                                           # конкретная ошибка: отмена доставленного
